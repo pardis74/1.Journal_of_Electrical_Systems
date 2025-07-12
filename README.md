@@ -84,3 +84,5 @@ Parameters are tuned using the Taguchi method to optimize performance.
 
 ## Repository Structure
 For Meta-Goal Programming, run `python main.py --mode goal`
+
+For NSGA-II Optimization, run  `python main.py --mode nsga2`
