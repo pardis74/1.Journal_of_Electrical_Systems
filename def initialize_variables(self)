@@ -1,0 +1,68 @@
+def initialize_variables(self):
+    """
+    Initialize the decision variables and key problem parameters used
+    throughout the optimization process.
+
+    Variables initialized here include:
+
+    1. Assignment Variables (x_ij):
+       - Binary decision variables indicating whether activity i is assigned 
+         to service provider j.
+       - Represented as a 2D numpy array of shape (num_activities, num_providers).
+       - Initialized to zeros (no assignments initially).
+
+    2. Auxiliary Variables (z_ijirj):
+       - Variables used for linearization of interaction terms between
+         pairs of activity-provider assignments (e.g., logistics transfers).
+       - Stored as a dictionary keyed by tuples ((i, j), (i', j')).
+       - Initially empty; to be defined/updated during optimization setup.
+
+    3. Aggregate Metrics:
+       - t_d: Total execution time for fulfilling all activities for requester d.
+       - p_d: Total cost incurred for all assigned activities.
+       - q_d: Quality metric representing overall service quality.
+         Initialized to 1.0 to avoid division by zero in calculations.
+
+    4. Sustainability Components:
+       - Environmental (EnCS), Economic (EcCS), and Social (sCS) sustainability
+         component values for each activity-provider pair.
+       - Loaded from input data, stored in dictionaries keyed by (i, j).
+       
+    Note:
+    - These variables provide the starting point for the optimization
+      algorithms to search for feasible and optimal assignments.
+    """
+    num_activities = len(self.activities)
+    num_providers = len(self.providers)
+
+    # Initialize binary assignment matrix x_ij: shape (activities x providers)
+    # Each element x_ij[i,j] = 1 if activity i assigned to provider j, else 0
+    self.x_ij = np.zeros((num_activities, num_providers), dtype=int)
+
+    # Initialize auxiliary linearization variables dictionary for pairs of assignments
+    # Key format: ((i, j), (i_prime, j_prime))
+    self.z_ijirj = {}
+
+    # Initialize aggregate execution time, cost, and quality metrics
+    self.t_d = 0.0    # Total execution time (float)
+    self.p_d = 0.0    # Total cost (float)
+    self.q_d = 1.0    # Quality metric (float), initialized to 1 to avoid division errors
+
+    # Load sustainability components from input data into dictionaries keyed by (i,j)
+    self.EnCS = {
+        (i, j): self.data['EnCS'][i][j]
+        for i in range(num_activities)
+        for j in range(num_providers)
+    }
+
+    self.EcCS = {
+        (i, j): self.data['EcCS'][i][j]
+        for i in range(num_activities)
+        for j in range(num_providers)
+    }
+
+    self.sCS = {
+        (i, j): self.data['sCS'][i][j]
+        for i in range(num_activities)
+        for j in range(num_providers)
+    }
