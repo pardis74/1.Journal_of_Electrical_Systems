@@ -1,0 +1,36 @@
+def constraint_environment(self):
+    # All environmental component values must be at least Enmin
+    return all(en >= self.data['Enmin'] for en in self.EnCS.values())
+
+def constraint_economy(self):
+    # All economic component values must be at least Ecmin
+    return all(ec >= self.data['Ecmin'] for ec in self.EcCS.values())
+
+def constraint_social(self):
+    # All social component values must be at least Spmin
+    return all(sc >= self.data['Spmin'] for sc in self.sCS.values())
+
+def constraint_execution_time(self):
+    # Execution time cannot exceed Tmax
+    return self.t_d <= self.data['Tmax']
+
+def constraint_total_cost(self):
+    # Total cost cannot exceed Pmax
+    return self.p_d <= self.data['Pmax']
+
+def constraint_quality_level(self):
+    # Quality must be above minimum threshold Qmin
+    return self.q_d >= self.data['Qmin']
+
+def constraint_one_provider_per_activity(self):
+    # For each activity, exactly one provider assigned
+    return all(np.sum(self.x_ij[i, :]) == 1 for i in range(len(self.activities)))
+
+def constraint_linearization(self):
+    # Placeholder for linearization constraints on z_ijirj variables
+    # Implement linear inequalities linking x and z variables
+    return True  # to be implemented
+
+def constraint_non_negative(self):
+    # Execution time, cost, and quality must be non-negative
+    return self.t_d >= 0 and self.p_d >= 0 and self.q_d >= 0
