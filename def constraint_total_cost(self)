@@ -1,0 +1,22 @@
+def constraint_total_cost(self):
+    """
+    Constraint: Ensure that the total cost of executing the service composition does not exceed the allowable budget.
+
+    Description:
+    This constraint ensures that the overall cost `p_d` for executing all assigned
+    activities (including service fees and potentially transfer/logistics costs)
+    does not exceed a predefined maximum budget `Pmax`.
+
+    Purpose:
+    - Keeps the solution financially feasible.
+    - Helps enforce a customer's or organization's cost limitations.
+
+    Logic:
+    - `self.p_d` is the total calculated cost of the selected service composition.
+      It is assumed to be updated elsewhere during evaluation.
+    - The constraint checks if this cost is within the allowed budget (`Pmax`).
+
+    Returns:
+        bool: True if the total cost is within budget; False if it exceeds the limit.
+    """
+    return self.p_d <= self.data['Pmax']
