@@ -1,0 +1,35 @@
+def objective_sustainability(self):
+    """
+    Calculate the total sustainability score for the current assignment of activities to providers.
+
+    This objective aims to minimize the combined impact of three sustainability components:
+    environmental, economic, and social, aggregated over all assigned activity-provider pairs.
+
+    How it works:
+    - Iterate over all activities (indexed by i) and all providers (indexed by j).
+    - For each pair (i, j), check if activity i is assigned to provider j (i.e., x_ij[i][j] == 1).
+    - If assigned, sum the values of:
+        - Environmental component: EnCS[(i, j)]
+        - Economic component: EcCS[(i, j)]
+        - Social component: sCS[(i, j)]
+    - The total sum over all assigned pairs represents the sustainability impact.
+    
+    Objective:
+    - Since sustainability components here represent "costs" or "impacts," the goal
+      is to minimize this total sum to improve system sustainability.
+    
+    Returns:
+        float: The total sustainability impact of the current assignments.
+    """
+    total_sustainability = 0.0
+    
+    # Loop through all activity-provider pairs
+    for i in range(len(self.activities)):
+        for j in range(len(self.providers)):
+            # Check if activity i is assigned to provider j
+            if self.x_ij[i][j] == 1:
+                # Sum the environmental, economic, and social components for the assignment
+                total_sustainability += (self.EnCS[(i, j)] + 
+                                         self.EcCS[(i, j)] + 
+                                         self.sCS[(i, j)])
+    return total_sustainability
