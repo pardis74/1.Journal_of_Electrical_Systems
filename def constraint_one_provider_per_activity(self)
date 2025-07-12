@@ -1,0 +1,21 @@
+def constraint_one_provider_per_activity(self):
+    """
+    Constraint: Ensure that exactly one service provider is assigned to each activity.
+
+    Description:
+    This constraint guarantees that for every activity `i`, one and only one provider `j`
+    is selected to perform it. In other words, each activity must be assigned to a **single** service provider.
+
+    Purpose:
+    - Ensures mutual exclusivity in assignments.
+    - Prevents over-assignment (multiple providers to one activity) or under-assignment (no provider assigned).
+
+    Logic:
+    - `self.x_ij[i, :]` represents the row for activity `i` across all providers.
+    - Summing this row counts how many providers are assigned to that activity.
+    - The sum must be exactly 1 for a valid assignment.
+
+    Returns:
+        bool: True if each activity has exactly one assigned provider; False otherwise.
+    """
+    return all(np.sum(self.x_ij[i, :]) == 1 for i in range(len(self.activities)))
