@@ -1,0 +1,25 @@
+def constraint_social(self):
+    """
+    Constraint: Ensure that the social sustainability level meets a required minimum.
+
+    Description:
+    This constraint verifies that for each activity `i`, the assigned provider offers
+    a level of **social sustainability** (e.g., labor standards, worker safety, fair wages)
+    that meets or exceeds a predefined threshold `Spmin`.
+
+    Logic:
+    - Iterate over all activities `i`.
+    - For each activity, compute the weighted sum of social sustainability values
+      `sCS[(i, j)]` multiplied by the decision variable `x_ij[i][j]` indicating assignment.
+    - Since only one provider is assigned per activity, the sum effectively selects
+      the social sustainability value for the chosen provider.
+    - The sum for each activity must be ≥ `Spmin`.
+
+    Returns:
+        bool: True if all activity-provider assignments meet or exceed the social threshold;
+              False otherwise.
+    """
+    return all(
+        sum(self.sCS[(i, j)] * self.x_ij[i][j] for j in range(len(self.providers))) >= self.data['Spmin']
+        for i in range(len(self.activities))
+    )
