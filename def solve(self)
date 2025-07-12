@@ -1,0 +1,25 @@
+def solve(self):
+    """
+    Solve the multi-objective optimization problem using the selected meta-goal programming method.
+
+    Description:
+    This method decides which meta-goal programming approach to apply based on the
+    `method` attribute specified during initialization. It then calls the corresponding
+    solver function to perform optimization and return the solution.
+
+    Supported Methods:
+    - "weighted": Applies the weighted sum method, minimizing the weighted sum of deviations.
+    - "minimax": Applies the minimax method, minimizing the maximum weighted deviation.
+
+    Raises:
+        NotImplementedError: If the specified method is not supported.
+
+    Returns:
+        Solution object or value representing the optimized objective(s).
+    """
+    if self.method == "weighted":
+        return self.minimize_weighted_deviation()
+    elif self.method == "minimax":
+        return self.minimize_minimax_deviation()
+    else:
+        raise NotImplementedError("Unsupported goal programming method.")
