@@ -1,0 +1,33 @@
+def objective_service_quality(self):
+    """
+    Calculate the composite service quality objective.
+
+    This objective function evaluates the overall service quality based on three key metrics:
+    1. Total execution time (t_d)
+    2. Total cost (p_d)
+    3. Quality metric (q_d)
+
+    Approach:
+    - We want to minimize time and cost.
+    - For quality, since higher quality is better, but we want to minimize the objective,
+      we take the inverse of the quality metric (1 / q_d).
+    - To combine these into a single scalar metric that reflects the worst-case performance,
+      the function returns the maximum among:
+        - t_d (time)
+        - p_d (cost)
+        - 1 / q_d (inverse quality, penalizing low quality)
+
+    Notes:
+    - The denominator `max(self.q_d, 1e-6)` ensures numerical stability and prevents division by zero.
+      If `q_d` is very close to zero, it uses 1e-6 as a lower bound.
+    - This max operator means the objective focuses on the "bottleneck" or worst component among the three,
+      pushing the optimization to improve all aspects evenly rather than optimizing just one.
+
+    Returns:
+        float: The worst-case measure among execution time, cost, and inverse quality.
+    """
+    # Calculate inverse quality safely to avoid division by zero
+    inverse_quality = 1 / max(self.q_d, 1e-6)
+
+    # Return the maximum among execution time, cost, and inverse quality
+    return max(self.t_d, self.p_d, inverse_quality)
