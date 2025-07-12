@@ -1,0 +1,161 @@
+import numpy as np
+import json
+
+class CloudManufacturingProblem:
+    def __init__(self, data):
+        self.data = data
+        self.initialize_indices()
+        self.initialize_variables()
+        self.initialize_objectives()
+        self.initialize_constraints()
+
+    def initialize_indices(self):
+        self.activities = self.data["activities"]                 # Activity index i
+        self.providers = self.data["service_providers"]           # Service provider index j
+        self.environment_indices = self.data["env_index"]         # Environmental components e
+        self.economic_indices = self.data["eco_index"]            # Economic components c
+        self.social_indices = self.data["soc_index"]              # Social components s
+
+    def initialize_variables(self):
+        self.x_ij = np.zeros((len(self.activities), len(self.providers)))  # Decision binary variables
+        self.z_ijirj = {}  # Auxiliary variables for linearization
+        self.t_d = 0  # Total execution time
+        self.p_d = 0  # Total cost
+        self.q_d = 1  # Initial quality (avoid division by 0)
+
+        # Sustainability component placeholders
+        self.EnCS = {(i, j): self.data['EnCS'][i][j] for i in range(len(self.activities)) for j in range(len(self.providers))}
+        self.EcCS = {(i, j): self.data['EcCS'][i][j] for i in range(len(self.activities)) for j in range(len(self.providers))}
+        self.sCS = {(i, j): self.data['sCS'][i][j] for i in range(len(self.activities)) for j in range(len(self.providers))}
+
+    def initialize_objectives(self):
+        self.objectives = {
+            "OBJ1": self.objective_sustainability,
+            "OBJ2": self.objective_service_quality,
+            "OBJ3": self.objective_logistics_cost
+        }
+
+    def initialize_constraints(self):
+        self.constraints = [
+            self.constraint_environment,
+            self.constraint_economy,
+            self.constraint_social,
+            self.constraint_execution_time,
+            self.constraint_total_cost,
+            self.constraint_quality_level,
+            self.constraint_one_provider_per_activity,
+            self.constraint_linearization,
+            self.constraint_non_negative
+        ]
+
+    def objective_sustainability(self):
+        return sum(self.EnCS[(i, j)] + self.EcCS[(i, j)] + self.sCS[(i, j)] for i in range(len(self.activities)) for j in range(len(self.providers)) if self.x_ij[i][j] == 1)
+
+    def objective_service_quality(self):
+        return max(self.t_d, self.p_d, 1 / max(self.q_d, 1e-6))
+
+    def objective_logistics_cost(self):
+        cost = 0
+        for key, z in self.z_ijirj.items():
+            i, j, i_p, j_p = key
+            cost += self.data['logistics_cost'][i][j][i_p][j_p] * z
+        return cost
+
+    def constraint_environment(self):
+        return all(sum(self.EnCS[(i, j)] * self.x_ij[i][j] for j in range(len(self.providers))) >= self.data['Enmin'] for i in range(len(self.activities)))
+
+    def constraint_economy(self):
+        return all(sum(self.EcCS[(i, j)] * self.x_ij[i][j] for j in range(len(self.providers))) >= self.data['Ecmin'] for i in range(len(self.activities)))
+
+    def constraint_social(self):
+        return all(sum(self.sCS[(i, j)] * self.x_ij[i][j] for j in range(len(self.providers))) >= self.data['Spmin'] for i in range(len(self.activities)))
+
+    def constraint_execution_time(self):
+        return self.t_d <= self.data['Tmax']
+
+    def constraint_total_cost(self):
+        return self.p_d <= self.data['Pmax']
+
+    def constraint_quality_level(self):
+        return self.q_d >= self.data['Qmin']
+
+    def constraint_one_provider_per_activity(self):
+        return all(np.sum(self.x_ij[i, :]) == 1 for i in range(len(self.activities)))
+
+    def constraint_linearization(self):
+        return True  # Assume satisfied or preprocessed externally
+
+    def constraint_non_negative(self):
+        return self.t_d >= 0 and self.p_d >= 0 and self.q_d >= 0
+
+
+class MetaGoalProgrammingSolver:
+    def __init__(self, problem, method="weighted", weights=None):
+        self.problem = problem
+        self.method = method
+        self.weights = weights
+
+    def solve(self):
+        if self.method == "weighted":
+            return self.minimize_weighted_deviation()
+        elif self.method == "minimax":
+            return self.minimize_minimax_deviation()
+        else:
+            raise NotImplementedError("Unsupported goal programming method.")
+
+    def minimize_weighted_deviation(self):
+        deviations = []
+        for i, obj in enumerate(self.problem.objectives.values()):
+            deviation = self.weights[i] * obj()
+            deviations.append(deviation)
+        return sum(deviations)
+
+    def minimize_minimax_deviation(self):
+        return max(self.weights[i] * obj() for i, obj in enumerate(self.problem.objectives.values()))
+
+
+class NSGAIIOptimizer:
+    def __init__(self, problem, population_size=100, generations=50):
+        self.problem = problem
+        self.population_size = population_size
+        self.generations = generations
+
+    def optimize(self):
+        def fitness(solution):
+            self.problem.x_ij = solution.reshape(self.problem.x_ij.shape)
+            return [
+                self.problem.objective_sustainability(),
+                self.problem.objective_service_quality(),
+                self.problem.objective_logistics_cost()
+            ]
+
+        nsga2 = NSGA2(fitness_func=fitness,
+                      num_objectives=3,
+                      population_size=self.population_size,
+                      generations=self.generations)
+        return nsga2.run()
+
+
+def load_data(path):
+    with open(path, 'r') as f:
+        return json.load(f)
+
+
+def main():
+    data = load_data("cloud_manufacturing_input.json")
+    problem = CloudManufacturingProblem(data)
+
+    print("Solving with Meta-Goal Programming...")
+    weights = [0.4, 0.3, 0.3]
+    meta_solver = MetaGoalProgrammingSolver(problem, method="weighted", weights=weights)
+    solution_mgp = meta_solver.solve()
+    print("Meta-Goal Solution:", solution_mgp)
+
+    print("Solving with NSGA-II...")
+    nsga_solver = NSGAIIOptimizer(problem)
+    pareto_solutions = nsga_solver.optimize()
+    print("NSGA-II Pareto Front:", pareto_solutions)
+
+
+if __name__ == "__main__":
+    main()
