@@ -1,0 +1,39 @@
+def __init__(self, data):
+    """
+    Initialize the CloudManufacturingProblem instance with input data.
+
+    Parameters:
+        data (dict): A dictionary containing all necessary input data required
+                     to set up the problem, including:
+                     - lists of activities, service providers, sustainability indices
+                     - matrices or mappings for sustainability components (environmental, economic, social)
+                     - constraints thresholds (time, cost, quality)
+                     - logistics costs and other problem-specific parameters
+    
+    This initialization method performs four key setup steps:
+    
+    1. Store the raw input data for use throughout the problem.
+    
+    2. Extract and organize the key indices (sets) used in the problem such as:
+       activities (i), service providers (j), and sustainability indices (e, c, s).
+    
+    3. Initialize the decision variables (such as assignment variables x_ij, auxiliary variables),
+       as well as aggregate metrics like total execution time, cost, and quality.
+    
+    4. Define the objective functions and constraint functions as callable methods or attributes
+       for use in the optimization process.
+    """
+    # Store input data dictionary for access in other methods
+    self.data = data
+
+    # Step 1: Extract sets/indices from input data for clear referencing
+    self.initialize_indices()
+
+    # Step 2: Initialize all decision variables and sustainability component values
+    self.initialize_variables()
+
+    # Step 3: Setup objective functions dictionary for optimization targets
+    self.initialize_objectives()
+
+    # Step 4: Setup a list of constraints functions to be checked during optimization
+    self.initialize_constraints()
