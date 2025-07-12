@@ -1,0 +1,119 @@
+class CloudManufacturingProblem:
+    def __init__(self, data):
+        """
+        Initialize the Cloud Manufacturing Problem instance.
+        
+        Parameters:
+            data (dict): Dictionary containing all necessary data for the problem, including:
+                - activities: List of manufacturing activities (index i)
+                - service_providers: List of available service providers (index j)
+                - env_index: List of environmental sustainability indices (index e)
+                - eco_index: List of economic sustainability indices (index c)
+                - soc_index: List of social sustainability indices (index s)
+                - EnCS, EcCS, sCS: Sustainability component matrices (activity x provider)
+                - logistics_cost: 4D matrix for logistic cost between activity-provider pairs
+                - Enmin, Ecmin, Spmin: Minimum sustainability thresholds
+                - Tmax, Pmax, Qmin: Constraints on time, cost, and quality
+                - Additional parameters as needed
+                
+        This method calls several helper functions to initialize:
+            - Indices for activities, providers, and sustainability components
+            - Decision variables including assignments and auxiliary variables
+            - Objective function placeholders
+            - Constraints to be enforced during optimization
+        """
+        self.data = data
+        
+        # Step 1: Initialize indices (sets for i, j, e, c, s)
+        self.initialize_indices()
+        
+        # Step 2: Initialize decision variables (x_ij, z_ijirj, t_d, p_d, q_d)
+        self.initialize_variables()
+        
+        # Step 3: Initialize objectives (sustainability, service quality, logistics cost)
+        self.initialize_objectives()
+        
+        # Step 4: Initialize constraints (all problem constraints as callable functions)
+        self.initialize_constraints()
+
+    def initialize_indices(self):
+        """
+        Extract and store the indices used in the problem.
+        These indices represent sets over which sums and constraints are defined.
+        """
+        self.activities = self.data["activities"]                # List of activities (i)
+        self.providers = self.data["service_providers"]          # List of service providers (j)
+        self.environment_indices = self.data["env_index"]        # Environmental sustainability indices (e)
+        self.economic_indices = self.data["eco_index"]           # Economic sustainability indices (c)
+        self.social_indices = self.data["soc_index"]             # Social sustainability indices (s)
+
+    def initialize_variables(self):
+        """
+        Initialize decision variables and parameters needed for the model.
+        
+        - x_ij: Binary variables indicating if activity i uses service j (initialized zeros)
+        - z_ijirj: Auxiliary variables for linearizing interactions between activity-provider pairs (empty initially)
+        - t_d: Total execution time initialized to zero
+        - p_d: Total cost initialized to zero
+        - q_d: Service quality initialized to 1 (avoid zero to prevent division errors)
+        
+        - EnCS, EcCS, sCS: Sustainability components per activity-provider pair loaded from input data
+        """
+        num_activities = len(self.activities)
+        num_providers = len(self.providers)
+        
+        # Binary assignment variables: shape (activities x providers)
+        self.x_ij = np.zeros((num_activities, num_providers), dtype=int)
+        
+        # Auxiliary linearization variables: dictionary keyed by (i, j, i', j')
+        self.z_ijirj = {}
+        
+        # Aggregate metrics initialized
+        self.t_d = 0.0  # Execution time for requester d
+        self.p_d = 0.0  # Total cost
+        self.q_d = 1.0  # Quality metric (non-zero to avoid division issues)
+        
+        # Load sustainability components for each activity-provider pair from data
+        self.EnCS = {
+            (i, j): self.data['EnCS'][i][j]
+            for i in range(num_activities)
+            for j in range(num_providers)
+        }
+        self.EcCS = {
+            (i, j): self.data['EcCS'][i][j]
+            for i in range(num_activities)
+            for j in range(num_providers)
+        }
+        self.sCS = {
+            (i, j): self.data['sCS'][i][j]
+            for i in range(num_activities)
+            for j in range(num_providers)
+        }
+
+    def initialize_objectives(self):
+        """
+        Define objective functions as callable attributes.
+        Each objective returns a scalar value based on current decision variables.
+        """
+        self.objectives = {
+            "OBJ1": self.objective_sustainability,     # Minimize sum of sustainability components
+            "OBJ2": self.objective_service_quality,    # Minimize/maximize service quality metric
+            "OBJ3": self.objective_logistics_cost      # Minimize logistics cost
+        }
+
+    def initialize_constraints(self):
+        """
+        Store all constraint functions in a list.
+        Each function returns True if the constraint is satisfied, False otherwise.
+        """
+        self.constraints = [
+            self.constraint_environment,
+            self.constraint_economy,
+            self.constraint_social,
+            self.constraint_execution_time,
+            self.constraint_total_cost,
+            self.constraint_quality_level,
+            self.constraint_one_provider_per_activity,
+            self.constraint_linearization,
+            self.constraint_non_negative
+        ]
