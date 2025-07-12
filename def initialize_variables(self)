@@ -66,3 +66,19 @@ def initialize_variables(self):
         for i in range(num_activities)
         for j in range(num_providers)
     }
+
+    def objective_sustainability(self):
+    # Sum over all (i, j) of environmental, economic, and social components
+    total_env = sum(self.EnCS.values())
+    total_eco = sum(self.EcCS.values())
+    total_soc = sum(self.sCS.values())
+    return total_env + total_eco + total_soc
+
+    def objective_service_quality(self):
+        # Composite service quality metric, e.g., max of time, cost, inverse quality
+        return max(self.t_d, self.p_d, 1 / self.q_d)
+
+    def objective_logistics_cost(self):
+        # Compute logistics cost using internal method or data
+        return self.compute_logistics_cost()
+
