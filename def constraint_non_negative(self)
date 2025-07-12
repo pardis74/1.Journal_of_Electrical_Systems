@@ -1,0 +1,23 @@
+def constraint_non_negative(self):
+    """
+    Constraint: Ensure that key output variables are non-negative.
+
+    Description:
+    This constraint ensures that the three critical outcome metrics—
+    total execution time (`t_d`), total cost (`p_d`), and quality level (`q_d`)—
+    remain non-negative. These values must be physically and logically valid
+    within the problem domain.
+
+    Purpose:
+    - Prevents the model from producing infeasible or meaningless negative outputs.
+    - Ensures compatibility with real-world interpretations (e.g., time and cost can't be negative).
+
+    Logic:
+    - `t_d` must be ≥ 0: Time cannot be negative.
+    - `p_d` must be ≥ 0: Cost cannot be negative.
+    - `q_d` must be ≥ 0: Quality must be defined positively or at worst, zero.
+
+    Returns:
+        bool: True if all three variables are non-negative; False otherwise.
+    """
+    return self.t_d >= 0 and self.p_d >= 0 and self.q_d >= 0
