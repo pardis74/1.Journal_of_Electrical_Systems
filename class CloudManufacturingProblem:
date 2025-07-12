@@ -1,4 +1,4 @@
-Class CloudManufacturingProblem:
+class CloudManufacturingProblem:
     def __init__(self, data):
         """
         Initialize the Cloud Manufacturing Problem instance.
