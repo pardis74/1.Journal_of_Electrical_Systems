@@ -1,0 +1,23 @@
+ class MetaGoalProgrammingSolver:
+    def __init__(self, problem, method="weighted", weights=None):
+        self.problem = problem
+        self.method = method
+        self.weights = weights
+
+    def solve(self):
+        if self.method == "weighted":
+            return self.minimize_weighted_deviation()
+        elif self.method == "minimax":
+            return self.minimize_minimax_deviation()
+        else:
+            raise NotImplementedError("Unsupported goal programming method.")
+
+    def minimize_weighted_deviation(self):
+        deviations = []
+        for i, obj in enumerate(self.problem.objectives.values()):
+            deviation = self.weights[i] * obj()
+            deviations.append(deviation)
+        return sum(deviations)
+
+    def minimize_minimax_deviation(self):
+        return max(self.weights[i] * obj() for i, obj in enumerate(self.problem.objectives.values()))
