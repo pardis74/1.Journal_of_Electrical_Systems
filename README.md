@@ -83,4 +83,5 @@ For complex or large-scale problems, the NSGA-II (Non-dominated Sorting Genetic 
 Parameters are tuned using the Taguchi method to optimize performance.
 
 ## Repository Structure
-
+For Meta-Goal Programming:
+python main.py --mode goal
