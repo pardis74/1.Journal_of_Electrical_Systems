@@ -86,3 +86,14 @@ Parameters are tuned using the Taguchi method to optimize performance.
 For Meta-Goal Programming, run `python main.py --mode goal`
 
 For NSGA-II Optimization, run  `python main.py --mode nsga2`
+
+##  Outputs
+- Pareto-optimal task-to-provider assignment configurations
+
+- Sustainability score distributions per activity or provider
+
+- Trade-off plots for execution time, cost, and quality
+
+- Logistics cost heatmaps and visualizations
+
+
