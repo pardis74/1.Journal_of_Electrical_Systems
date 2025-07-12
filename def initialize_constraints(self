@@ -1,0 +1,61 @@
+def initialize_constraints(self):
+    """
+    Initialize the list of constraint functions for the optimization problem.
+
+    Each constraint corresponds to a specific condition that the solution
+    must satisfy to be considered feasible. These constraints enforce
+    problem requirements such as minimum sustainability levels, resource
+    limits, and logical correctness.
+
+    The constraints are stored as callable methods in a list attribute,
+    so the optimization algorithm can systematically check feasibility.
+
+    Constraints included:
+
+    1. constraint_environment:
+       - Ensures that the environmental sustainability level meets or exceeds
+         the minimum required threshold (Enmin).
+    
+    2. constraint_economy:
+       - Ensures that the economic sustainability level meets or exceeds
+         the minimum required threshold (Ecmin).
+
+    3. constraint_social:
+       - Ensures that the social sustainability level meets or exceeds
+         the minimum required threshold (Spmin).
+
+    4. constraint_execution_time:
+       - Limits the total execution time (t_d) to be within the maximum
+         allowable time (Tmax).
+
+    5. constraint_total_cost:
+       - Limits the total cost (p_d) to be within the maximum allowable cost (Pmax).
+
+    6. constraint_quality_level:
+       - Requires the overall service quality (q_d) to be at least the
+         minimum acceptable quality (Qmin).
+
+    7. constraint_one_provider_per_activity:
+       - Enforces that each activity is assigned to exactly one service provider.
+       - This means the sum of assignment variables x_ij across all j for
+         each activity i must equal 1.
+
+    8. constraint_linearization:
+       - Enforces linearization conditions on auxiliary variables (z_ijirj)
+         that are used to model interactions or logistics between assigned services.
+
+    9. constraint_non_negative:
+       - Ensures non-negativity of aggregate decision variables like execution
+         time, cost, and quality metrics to maintain logical consistency.
+    """
+    self.constraints = [
+        self.constraint_environment,
+        self.constraint_economy,
+        self.constraint_social,
+        self.constraint_execution_time,
+        self.constraint_total_cost,
+        self.constraint_quality_level,
+        self.constraint_one_provider_per_activity,
+        self.constraint_linearization,
+        self.constraint_non_negative
+    ]
