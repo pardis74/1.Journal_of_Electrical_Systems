@@ -1,5 +1,4 @@
-# Development of Service Compositions in Cloud Manufacturing Proceed Based on System Sustainability Components
-
+# Development of Service Compositions in Cloud Manufacturing Proceed Based on System Sustainability Components
 
 A complete multi-objective optimization framework for sustainable service composition in cloud manufacturing environments. This project assigns manufacturing tasks to service providers while optimizing environmental sustainability, economic performance, social impact, execution time, cost, and quality.
 
