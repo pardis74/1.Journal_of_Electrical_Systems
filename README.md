@@ -1,195 +1,99 @@
-\documentclass[11pt]{article}
-\usepackage[margin=1in]{geometry}
-\usepackage{amsmath, amssymb}
-\usepackage{graphicx}
-\usepackage{hyperref}
-\usepackage{enumitem}
-\setlength{\parskip}{0.8em}
-\setlength{\parindent}{0pt}
+Cloud Manufacturing Optimization
+A complete multi-objective optimization framework for sustainable service composition in cloud manufacturing environments. This project assigns manufacturing tasks to service providers while optimizing environmental sustainability, economic performance, social impact, execution time, cost, and quality.
 
-\title{Sustainable Service Composition in Cloud Manufacturing}
-\author{Ali Vaziri, Pardis Sadatian Moghaddam, Anita Ershadi Oskouei}
-\date{}
+Overview
+This framework addresses the assignment of manufacturing tasks to service providers in a cloud manufacturing environment by optimizing across the following dimensions:
 
-\begin{document}
+Environmental sustainability
 
-\maketitle
+Economic performance
 
-\section*{Overview}
+Social impact
 
-This repository provides a complete multi-objective optimization framework for service composition in cloud manufacturing environments. The objective is to assign manufacturing tasks (activities) to service providers while optimizing for:
+Execution time
 
-\begin{enumerate}
-    \item Environmental Sustainability
-    \item Economic Performance
-    \item Social Impact
-    \item Execution Time
-    \item Total Cost
-    \item Service Quality
-    \item Logistics Cost
-\end{enumerate}
+Total cost
 
-\section*{Problem Statement}
+Service quality
 
-Given a set of activities $i$ and service providers $j$, the model determines the optimal assignment such that:
+Logistics cost
 
-\begin{enumerate}
-    \item Sustainability components (environmental, economic, and social) meet or exceed defined thresholds.
-    \item Execution time, cost, and service quality for each requester $d$ remain within acceptable limits.
-    \item Overall system performance across sustainability and logistics dimensions is optimized.
-\end{enumerate}
+Problem Statement
+Given:
 
-\section*{Mathematical Model}
+A set of manufacturing activities
 
-\subsection*{Decision Variables}
-\begin{enumerate}
-    \item $x_{ij} \in \{0,1\}$: 1 if activity $i$ is assigned to provider $j$
-    \item $z_{iji'j'} \in \{0,1\}$: Auxiliary binary linking variable
-    \item $t_d, p_d, q_d \geq 0$: Total time, cost, and quality for requester $d$
-\end{enumerate}
+A pool of service providers
 
-\subsection*{Objective Functions}
+The goal is to determine an optimal assignment of tasks such that:
 
-\begin{align*}
-    \text{OBJ}_1 &= \min \sum_{i,j} \left( EnCS_{ij} + EcCS_{ij} + sCS_{ij} \right) x_{ij} \\
-    \text{OBJ}_2 &= \max \left[ QoS_d = \min(t_d, p_d, \frac{1}{q_d}) \right] \\
-    \text{OBJ}_3 &= \min \sum_{i,j,i',j'} plc_{iji'j'} \cdot z_{iji'j'}
-\end{align*}
+Sustainability thresholds (environmental, economic, social) are met or exceeded
 
-\subsection*{Constraints}
+Requester-level constraints on time, cost, and quality are satisfied
 
-\textbf{Sustainability Thresholds:}
-\begin{align*}
-    \sum_j EnCS_{ij} x_{ij} &\geq En_{\min} \quad \forall i \\
-    \sum_j EcCS_{ij} x_{ij} &\geq Ec_{\min} \quad \forall i \\
-    \sum_j sCS_{ij} x_{ij} &\geq Sp_{\min} \quad \forall i
-\end{align*}
+Overall system performance is optimized across all objectives
 
-\textbf{Time, Cost, and Quality:}
-\begin{align*}
-    t_d &= \sum_{i,j} tmcs_{ij} x_{ij} + \sum_{i,i',j,j'} ttcs_{iji'j'} z_{iji'j'} \leq t_d^{\max} \\
-    p_d &= \sum_{i,j} pmcs_{ij} x_{ij} + \sum_{i,i',j,j'} ptcs_{iji'j'} z_{iji'j'} \leq p_d^{\max} \\
-    q_d &\geq q_d^{\min}
-\end{align*}
+Model Components
+Decision Variables
+Binary variables representing assignment of activities to providers
 
-\textbf{Assignment Constraint:}
-\[
-    \sum_j x_{ij} = 1 \quad \forall i
-\]
+Auxiliary binary variables for linking dependencies between tasks
 
-\textbf{Linearization Constraints:}
-\begin{align*}
-    z_{iji'j'} &\leq \frac{x_{ij} + x_{i'j'}}{2} \\
-    z_{iji'j'} &\geq x_{ij} + x_{i'j'} - 1
-\end{align*}
+Total execution time, cost, and service quality per requester
 
-\textbf{Non-Negativity:}
-\[
-    t_d, p_d, q_d \geq 0; \quad x_{ij}, z_{iji'j'} \in \{0,1\}
-\]
+Objectives
+Minimize environmental, economic, and social costs
 
-\section*{Meta-Goal Programming}
+Maximize overall service quality
 
-The multi-objective model is reformulated using meta-goal programming with deviation variables $n_i$ and $p_i$:
+Minimize logistics cost
 
-\[
-    f_i(x) + n_i - p_i = t_i, \quad \forall i
-\]
+Constraints
+Sustainability thresholds must be met for each activity
 
-\subsection*{Weighted Method}
-\[
-    \min \sum_{i=1}^{s} \omega_i \frac{n_i}{r_i}
-\]
+Time, cost, and quality constraints per requester
 
-\subsection*{Mini-Max Method}
-\[
-    \min \max_{i=1}^{s} \left( \omega_i \frac{n_i}{r_i} \right)
-\]
+Each activity assigned to exactly one provider
 
-\subsection*{Meta-Goal Types}
-\begin{enumerate}
-    \item Type I: $\sum_{i \in S_k^1} \omega_i \frac{n_i}{r_i} \leq Q_k^1$
-    \item Type II: $\omega_l \frac{n_i}{r_l} - D \leq 0$, $D \leq Q_l^2$
-    \item Type III: $n_i - M_i y_i \leq 0$, $\frac{\sum_i y_i}{|S_r^3|} \leq Q_r^3$, $y_i \in \{0,1\}$
-\end{enumerate}
+Auxiliary constraints ensure logical consistency in service linking
 
-\section*{NSGA-II Heuristic (for Large-Scale Problems)}
+Meta-Goal Programming Reformulation
+The multi-objective problem is reformulated into a goal programming model using deviation variables.
 
-For high-dimensional instances, NSGA-II is applied using:
+Methods
+Weighted Method: minimize weighted sum of deviations from targets
 
-\begin{enumerate}
-    \item Non-dominated sorting
-    \item Crowding distance calculation
-    \item Tournament selection
-    \item Simulated Binary Crossover (SBX)
-    \item Polynomial mutation
-    \item Population merging and truncation
-\end{enumerate}
+Mini-Max Method: minimize the worst-case (maximum) deviation
 
-\textbf{Parameters:}
-\begin{enumerate}
-    \item $P_c$: Crossover probability
-    \item $P_m$: Mutation probability
-    \item $N_p$: Population size
-    \item Max iterations
-\end{enumerate}
+Meta-Goal Types
+Type I: soft constraints with maximum aggregated deviation
 
-Parameters are tuned via the Taguchi method.
+Type II: individual deviations capped by control parameters
 
-\section*{Repository Structure}
+Type III: limit on number of goals allowed to deviate using binary indicators
 
-\begin{verbatim}
-.
-├── data/                   # Input datasets
-├── models/                 # Optimization models
-│   ├── goal_programming.py
-│   └── nsga2_optimizer.py
-├── utils/                  # Pre/postprocessing utilities
-├── main.py                 # Main execution script
-├── results/                # Output and Pareto fronts
-└── README.md               # Project description
-\end{verbatim}
+NSGA-II Heuristic for Large-Scale Optimization
+For complex or large-scale problems, the NSGA-II (Non-dominated Sorting Genetic Algorithm II) heuristic is used, featuring:
 
-\section*{Usage Instructions}
+Non-dominated sorting of solutions
 
-1. Clone the Repository:
-\begin{verbatim}
-git clone https://github.com/yourusername/cloud-manufacturing-optimization.git
-cd cloud-manufacturing-optimization
-\end{verbatim}
+Crowding distance calculation for diversity preservation
 
-2. Install Dependencies:
-\begin{verbatim}
-pip install -r requirements.txt
-\end{verbatim}
+Tournament-based parent selection
 
-3. Run the Model:
-\begin{verbatim}
-# Meta-Goal Programming:
-python main.py --mode goal
+Simulated Binary Crossover (SBX)
 
-# NSGA-II Optimization:
-python main.py --mode nsga2
-\end{verbatim}
+Polynomial mutation
 
-\section*{Outputs}
-\begin{enumerate}
-    \item Pareto-optimal service assignments
-    \item Sustainability score distributions
-    \item Time-cost-quality trade-offs
-    \item Logistics cost visualizations
-\end{enumerate}
+Population merging and truncation to retain best solutions
 
-\section*{Citation}
-Ali Vaziri, Pardis Sadatian Moghaddam, Anita Ershadi Oskouei, \textit{Development of Service Compositions in Cloud Manufacturing Processes Based on System Sustainability Components}, 2025.
+NSGA-II Parameters
+Crossover probability
 
-\section*{Contact}
+Mutation probability
 
-For questions or collaboration:
+Population size
 
-\begin{enumerate}
-    \item Pardis Sadatian: \texttt{pardis.email@example.com}
-    \item Ali Vaziri: \texttt{ali.email@example.com}
-\end{enumerate}
+Maximum number of iterations
 
-\end{document}
+Parameters are tuned using the Taguchi method to optimize performance.
