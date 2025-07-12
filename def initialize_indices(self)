@@ -1,0 +1,38 @@
+def initialize_indices(self):
+    """
+    Extract and assign the key indices (sets) from the input data dictionary.
+
+    These indices represent the main domains over which the optimization
+    problem is defined. They are used throughout the model to organize
+    decision variables, compute objectives, and enforce constraints.
+
+    Specifically:
+    - activities: The set of manufacturing activities or tasks that need
+      to be performed (denoted as index i in the model).
+    - providers: The set of available service providers or resources that
+      can execute activities (denoted as index j).
+    - environment_indices: The set of environmental sustainability components
+      or criteria (denoted as index e).
+    - economic_indices: The set of economic sustainability components or
+      criteria (denoted as index c).
+    - social_indices: The set of social sustainability components or
+      criteria (denoted as index s).
+
+    After this method executes, these sets are accessible as attributes
+    on the problem instance for further use in variable initialization,
+    objective calculations, and constraints.
+    """
+    # List or set of manufacturing activities (tasks to be scheduled or assigned)
+    self.activities = self.data["activities"]             
+
+    # List or set of service providers or resources available to perform activities
+    self.providers = self.data["service_providers"]       
+
+    # Environmental sustainability components indices (e.g., pollution, energy consumption)
+    self.environment_indices = self.data["env_index"]     
+
+    # Economic sustainability components indices (e.g., cost, ROI)
+    self.economic_indices = self.data["eco_index"]        
+
+    # Social sustainability components indices (e.g., labor conditions, community impact)
+    self.social_indices = self.data["soc_index"]           
