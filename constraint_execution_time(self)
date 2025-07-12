@@ -1,0 +1,21 @@
+def constraint_execution_time(self):
+    """
+    Constraint: Ensure that the total execution time does not exceed the allowable limit.
+
+    Description:
+    This constraint ensures that the overall execution time `t_d` for completing all
+    service activities remains within a maximum threshold `Tmax` defined in the input data.
+
+    Purpose:
+    - Controls service delivery deadlines and customer time expectations.
+    - Guarantees that the composite service plan adheres to time constraints.
+
+    Logic:
+    - `self.t_d` is assumed to have been computed elsewhere based on service durations,
+      transfer times, and sequence structure (e.g., sequential, parallel, loop).
+    - The constraint simply checks that `t_d` is ≤ `Tmax`.
+
+    Returns:
+        bool: True if execution time is within the allowed maximum; False otherwise.
+    """
+    return self.t_d <= self.data['Tmax']
