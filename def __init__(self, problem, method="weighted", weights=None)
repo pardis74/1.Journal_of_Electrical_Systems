@@ -1,0 +1,4 @@
+def __init__(self, problem, method="weighted", weights=None):
+    self.problem = problem
+    self.method = method
+    self.weights = weights
