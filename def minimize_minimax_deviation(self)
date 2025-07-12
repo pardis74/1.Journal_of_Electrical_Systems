@@ -1,0 +1,14 @@
+def minimize_minimax_deviation(self):
+    """
+    Minimize the maximum weighted deviation among multiple objectives.
+
+    Description:
+    This method implements the **minimax goal programming** approach, which
+    focuses on minimizing the worst (maximum) weighted deviation from all objectives.
+    Instead of summing deviations, it looks for a solution that balances objectives by
+    reducing the largest individual deviation, promoting a more balanced trade-off.
+
+    Returns:
+        float: The maximum weighted deviation across all objectives.
+    """
+    return max(self.weights[i] * obj() for i, obj in enumerate(self.problem.objectives.values()))
