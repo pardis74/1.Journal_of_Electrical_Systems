@@ -1,0 +1,28 @@
+def initialize_objectives(self):
+    """
+    Initialize the objective functions for the optimization problem.
+
+    In this multi-objective problem, there are three main objectives:
+    
+    1. OBJ1: Sustainability Objective
+       - Minimize the combined sum of environmental, economic, and social
+         sustainability components across all activity-provider assignments.
+       
+    2. OBJ2: Service Quality Objective
+       - Maximize the quality of service by minimizing factors such as total
+         execution time, total cost, and the inverse of the quality metric.
+         Here, a composite quality measure is often taken as the maximum of
+         execution time, cost, and 1/quality to handle multi-criteria in one metric.
+
+    3. OBJ3: Logistics Cost Objective
+       - Minimize the total logistics cost incurred by transferring between
+         services and providers across activities.
+
+    This method stores these objectives as callable functions in a dictionary
+    so they can be easily accessed and evaluated during optimization.
+    """
+    self.objectives = {
+        "OBJ1": self.objective_sustainability,     # Function to minimize sustainability components sum
+        "OBJ2": self.objective_service_quality,    # Function to minimize service quality metric (time, price, inverse quality)
+        "OBJ3": self.objective_logistics_cost      # Function to minimize total logistics cost
+    }
