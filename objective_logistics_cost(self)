@@ -1,0 +1,34 @@
+def objective_logistics_cost(self):
+    """
+    Calculate the total logistics cost based on service assignments and transfers.
+
+    Logistics cost represents the expenses incurred when transferring or
+    coordinating activities between different service providers.
+
+    How it works:
+    - Iterate over all auxiliary variables `z_ijirj` which represent the
+      assignment of pairs of activities (i, i') to pairs of providers (j, j').
+    - For each pair ((i, j), (i', j')), multiply the logistic cost of transferring
+      activity i assigned to provider j to activity i' assigned to provider j' by
+      the corresponding linearization variable z.
+    - Sum all these products to get the total logistics cost.
+
+    Variables:
+    - `z_ijirj`: Auxiliary decision variables modeling whether a transfer happens
+      between the pair of assignments ((i,j) -> (i',j')).
+    - `self.data['logistics_cost']`: A 4-dimensional array or dictionary providing
+      the logistics cost between each pair of activity-provider assignments.
+
+    Returns:
+        float: The total logistics cost for all paired activity-provider assignments.
+    """
+    cost = 0.0
+
+    # Loop over all auxiliary linearization variables representing transfer pairs
+    for key, z in self.z_ijirj.items():
+        i, j, i_p, j_p = key  # Unpack indices from the key tuple
+
+        # Multiply logistics cost by the corresponding assignment variable z
+        cost += self.data['logistics_cost'][i][j][i_p][j_p] * z
+
+    return cost
