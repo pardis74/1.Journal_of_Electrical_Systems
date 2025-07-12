@@ -1,0 +1,22 @@
+def constraint_environment(self):
+    """
+    Constraint: Ensure that the environmental sustainability level meets a required minimum.
+
+    This constraint enforces that for **each activity**, the total environmental sustainability
+    score (based on the selected service provider) must be **at least** a predefined minimum
+    threshold: `Enmin`.
+
+    How it works:
+    - For each activity `i`, sum the environmental component `EnCS[(i, j)]` for all providers `j`,
+      but **only count those** where `x_ij[i][j] == 1`, meaning provider `j` is assigned to activity `i`.
+    - This is essentially: EnCS[i] = ∑(j) EnCS[i, j] * x_ij[i, j]
+    - Then check whether EnCS[i] ≥ Enmin.
+    - This must hold for **every activity**.
+
+    Returns:
+        bool: True if all activities meet the environmental minimum; otherwise, False.
+    """
+    return all(
+        sum(self.EnCS[(i, j)] * self.x_ij[i][j] for j in range(len(self.providers))) >= self.data['Enmin']
+        for i in range(len(self.activities))
+    )
