@@ -1,0 +1,26 @@
+def minimize_weighted_deviation(self):
+    """
+    Minimize the weighted sum of deviations across multiple objectives.
+
+    Description:
+    This method implements the **weighted goal programming** approach, which
+    calculates a combined scalar objective by summing the weighted deviations
+    from all individual objectives. Each objective's deviation is multiplied
+    by its corresponding weight, reflecting its relative importance.
+
+    Steps:
+    - Iterate over all objectives in the problem.
+    - For each objective, compute its current value (e.g., cost, quality metric).
+    - Multiply the objective value by the predefined weight to scale its contribution.
+    - Collect all weighted deviations in a list.
+    - Sum all weighted deviations to get a single scalar value representing
+      the overall goal deviation to be minimized.
+
+    Returns:
+        float: The total weighted sum of objective deviations.
+    """
+    deviations = []
+    for i, obj in enumerate(self.problem.objectives.values()):
+        deviation = self.weights[i] * obj()
+        deviations.append(deviation)
+    return sum(deviations)
