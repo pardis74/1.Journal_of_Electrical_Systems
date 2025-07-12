@@ -1,4 +1,4 @@
-Cloud Manufacturing Optimization
+#Cloud Manufacturing Optimization
 A complete multi-objective optimization framework for sustainable service composition in cloud manufacturing environments. This project assigns manufacturing tasks to service providers while optimizing environmental sustainability, economic performance, social impact, execution time, cost, and quality.
 
 Overview
