@@ -1,0 +1,31 @@
+def constraint_linearization(self):
+    """
+    Constraint: Enforce linearization for pairwise interaction terms used in logistics cost.
+
+    Description:
+    This placeholder method represents a constraint that ensures proper linearization
+    of product terms between binary decision variables. These arise when modeling
+    pairwise relationships between activities and service providers (e.g., for transfer cost).
+
+    In this simplified implementation, we return True, assuming these constraints have
+    already been handled elsewhere (e.g., in pre-processing, or encoded in the MILP solver).
+
+    Purpose:
+    - Prevent non-linear terms from violating linear programming formulation.
+    - Maintain solvability using MILP or LP solvers by transforming `x_ij * x_i'j'` terms
+      into auxiliary binary variables (e.g., `z_ijirj`), with additional constraints.
+
+    Typical Linearization Constraints:
+    For all relevant pairs (i, j, i', j'):
+        z_ijirj ≤ (x_ij + x_i'j') / 2  
+        z_ijirj ≥ x_ij + x_i'j' - 1  
+        z_ijirj ∈ {0, 1}
+
+    These ensure:
+    - z_ijirj = 1 if and only if both x_ij and x_i'j' are 1.
+    - Otherwise, z_ijirj = 0.
+
+    Returns:
+        bool: Always returns True here, as a placeholder.
+    """
+    return True  # In real implementation, enforce linearization constraints on z_ijirj variables
