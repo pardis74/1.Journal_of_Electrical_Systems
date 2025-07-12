@@ -1,0 +1,23 @@
+def constraint_economy(self):
+    """
+    Constraint: Ensure that the economic sustainability level meets a required minimum.
+
+    Description:
+    For each activity `i`, this constraint checks whether the economic performance,
+    based on the assigned provider, meets or exceeds the required economic threshold `Ecmin`.
+
+    Logic:
+    - Loop over all activities `i`.
+    - For each activity, sum the economic component values `EcCS[(i, j)]` weighted by
+      assignment decision variable `x_ij[i][j]` (which is 1 if provider j is assigned to activity i, else 0).
+    - Since each activity should only be assigned to one provider (enforced by other constraints),
+      this sum picks the economic value for that selected provider.
+    - The total for each activity must be ≥ `Ecmin`.
+
+    Returns:
+        bool: True if all activities satisfy the economic constraint; False if any activity violates it.
+    """
+    return all(
+        sum(self.EcCS[(i, j)] * self.x_ij[i][j] for j in range(len(self.providers))) >= self.data['Ecmin']
+        for i in range(len(self.activities))
+    )
