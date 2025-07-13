@@ -1,0 +1,14 @@
+def optimize(self):
+    def fitness(solution):
+        self.problem.x_ij = solution.reshape(self.problem.x_ij.shape)
+        return [
+            self.problem.objective_sustainability(),
+            self.problem.objective_service_quality(),
+            self.problem.objective_logistics_cost()
+        ]
+
+    nsga2 = NSGA2(fitness_func=fitness,
+                  num_objectives=3,
+                  population_size=self.population_size,
+                  generations=self.generations)
+    return nsga2.run()
