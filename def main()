@@ -1,0 +1,14 @@
+def main():
+    data = load_data("cloud_manufacturing_input.json")
+    problem = CloudManufacturingProblem(data)
+
+    print("Solving with Meta-Goal Programming...")
+    weights = [0.4, 0.3, 0.3]
+    meta_solver = MetaGoalProgrammingSolver(problem, method="weighted", weights=weights)
+    solution_mgp = meta_solver.solve()
+    print("Meta-Goal Solution:", solution_mgp)
+
+    print("Solving with NSGA-II...")
+    nsga_solver = NSGAIIOptimizer(problem)
+    pareto_solutions = nsga_solver.optimize()
+    print("NSGA-II Pareto Front:", pareto_solutions)
