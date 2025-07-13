@@ -1,0 +1,4 @@
+def __init__(self, problem, population_size=100, generations=50):
+    self.problem = problem
+    self.population_size = population_size
+    self.generations = generations
